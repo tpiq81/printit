@@ -1,4 +1,4 @@
-
+// Définition des diapositives avec images et textes associés
 const slides = [
 	{
 	  "image": "slide1.jpg",
@@ -83,9 +83,6 @@ const slides = [
 	updateActiveDot();
 	goToSlide(currentIndex + 1);
   });
-  
-  // Ajout d'un gestionnaire d'événements pour le défilement automatique toutes les 5 secondes
-  addClickListener(document, () => setInterval(() => goToSlide(currentIndex + 1), 5000));
   
   // Création des points indicateurs et initialisation à la première diapositive
   createDots();
