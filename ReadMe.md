@@ -1,1 +1,2 @@
-# Print-It WebSite v.1
+# Print It
+Consultez le site [Print It](https://tpiq81.github.io/printit/) pour voir le résultat en direct.
