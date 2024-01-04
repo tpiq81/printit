@@ -1,3 +1,4 @@
+
 const slides = [
 	{
 	  "image": "slide1.jpg",
@@ -16,108 +17,78 @@ const slides = [
 	  "tagLine": "Autocollants <span>avec découpe laser sur mesure</span>"
 	}
   ];
-// Ajout des event listeners sur les flèches
-document.querySelector('#banner .arrow_left').addEventListener('click', () => {
-	console.log("Flèche gauche cliquée !");
-	updateActiveDot(); 
-	goToSlide(currentIndex - 1);
-  });
   
-  document.querySelector('#banner .arrow_right').addEventListener('click', () => {
-	console.log("Flèche droite cliquée !");
-	updateActiveDot(); 
-	goToSlide(currentIndex + 1);
-  });
+  // Fonction pour sélectionner un élément du DOM
+  const select = (selector) => document.querySelector(selector);
   
-
-  // Fonction pour créer les points
-  function createDots() {
-	const dotsContainer = document.querySelector('.dots');
+  // Fonction pour sélectionner tous les éléments correspondant à un sélecteur du DOM
+  const selectAll = (selector) => document.querySelectorAll(selector);
   
-	// Supprime les points existants
+  // Fonction pour ajouter un gestionnaire d'événements de clic à un élément
+  const addClickListener = (element, callback) => element.addEventListener('click', callback);
+  
+  // Fonction pour créer un point indicateur (dot) et ajouter un gestionnaire d'événements pour le clic
+  const createDot = (index) => {
+	const dot = document.createElement('div');
+	dot.classList.add('dot');
+	dot.addEventListener('click', () => goToSlide(index));
+	return dot;
+  };
+  
+  // Fonction pour créer les points indicateurs pour chaque diapositive
+  const createDots = () => {
+	const dotsContainer = select('.dots');
 	dotsContainer.innerHTML = '';
-  
-	// Ajoute un point pour chaque slide
-	slides.forEach((slide, index) => {
-	  const dot = document.createElement('div');
-	  dot.classList.add('dot');
-	  dotsContainer.appendChild(dot);
-  
-	  // Ajoute un écouteur d'événement pour changer de slide lors du clic sur le point
-	  dot.addEventListener('click', () => {
-		goToSlide(index);
-	  });
-	});
-  
-	// Sélectionne le premier point comme point actif
+	slides.forEach((_, index) => dotsContainer.appendChild(createDot(index)));
 	dotsContainer.firstChild.classList.add('dot_selected');
-  }
+  };
   
-  // Appele la fonction pour créer les points lors de l'initialisation du slider
-  createDots();
-  
-  let currentIndex = 0; // Indice de la diapositive actuelle
-  
-  // Fonction pour aller à une diapositive spécifique
-  function goToSlide(index) {
-	// Vérifie les limites du tableau
-	if (index < 0) {
-	  index = slides.length - 1;
-	} else if (index >= slides.length) {
-	  index = 0;
-	}
-  
-	currentIndex = index;
-  
-	// Met à jour le point actif
-	updateActiveDot();
-  
-	// Met à jour l'image
-	updateSlide();
-  
-	// Met à jour le texte correspondant à l'image
-	updateSlideText();
-  }
-  
-  // Fonction pour mettre à jour le point actif
-  function updateActiveDot() {
-	const dots = document.querySelectorAll('.dot');
-	dots.forEach((dot, index) => {
-	  if (index === currentIndex) {
-		dot.classList.add('dot_selected');
-	  } else {
-		dot.classList.remove('dot_selected');
-	  }
-	});
-  }
-  
-  // Fonction pour mettre à jour l'image
-  function updateSlide() {
-	const bannerImage = document.querySelector('.banner-img');
+  // Fonction pour mettre à jour l'image de la diapositive actuelle
+  const updateSlide = () => {
+	const bannerImage = select('.banner-img');
 	const imagePath = `./assets/images/slideshow/${slides[currentIndex].image}`;
 	bannerImage.setAttribute('src', imagePath);
-  }
+  };
   
-  // Fonction pour mettre à jour le texte correspondant à l'image
-  function updateSlideText() {
-	const tagLine = document.querySelector('#banner p');
+  // Fonction pour mettre à jour le texte de la diapositive actuelle
+  const updateSlideText = () => {
+	const tagLine = select('#banner p');
 	tagLine.innerHTML = slides[currentIndex].tagLine;
-  }
+  };
   
-  // Écouteur d'événement pour la flèche droite
-  document.querySelector('#banner .arrow_right').addEventListener('click', () => {
-	goToSlide(currentIndex + 1);
-  });
+  // Fonction pour naviguer vers une diapositive spécifique en ajustant l'index
+  const goToSlide = (index) => {
+	currentIndex = (index + slides.length) % slides.length;
+	updateActiveDot();
+	updateSlide();
+	updateSlideText();
+  };
   
-  // Écouteur d'événement pour la flèche gauche
-  document.querySelector('#banner .arrow_left').addEventListener('click', () => {
+  // Fonction pour mettre à jour le point indicateur actif
+  const updateActiveDot = () => {
+	const dots = selectAll('.dot');
+	dots.forEach((dot, index) => dot.classList.toggle('dot_selected', index === currentIndex));
+  };
+  
+  // Ajout d'un gestionnaire d'événements de clic pour la flèche gauche avec console log
+  addClickListener(select('#banner .arrow_left'), () => {
+	console.log("Clic à gauche !");
+	updateActiveDot();
 	goToSlide(currentIndex - 1);
   });
   
-  // Ajout d'un écouteur d'événement pour gérer le défilement automatique
-  document.addEventListener('DOMContentLoaded', () => {
-	setInterval(() => {
-	  goToSlide(currentIndex + 1);
-	}, 5000); // Changement d'image toutes les 5 secondes 
+  // Ajout d'un gestionnaire d'événements de clic pour la flèche droite avec console log
+  addClickListener(select('#banner .arrow_right'), () => {
+	console.log("Clic à droite !");
+	updateActiveDot();
+	goToSlide(currentIndex + 1);
   });
+  
+  // Ajout d'un gestionnaire d'événements pour le défilement automatique toutes les 5 secondes
+  addClickListener(document, () => setInterval(() => goToSlide(currentIndex + 1), 5000));
+  
+  // Création des points indicateurs et initialisation à la première diapositive
+  createDots();
+  let currentIndex = 0;
+  goToSlide(currentIndex);
   
